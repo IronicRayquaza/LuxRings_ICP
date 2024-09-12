@@ -1,31 +1,77 @@
-import { useState } from 'react';
-import { hello26_backend } from 'declarations/hello26_backend';
+import React, { useState } from 'react';
+import './App.css';
 
-function App() {
-  const [greeting, setGreeting] = useState('');
+const App = () => {
+  const [ringSize, setRingSize] = useState('');
+  const [material, setMaterial] = useState('Gold');
+  const [luxPrice, setLuxPrice] = useState(null);
 
-  function handleSubmit(event) {
-    event.preventDefault();
-    const name = event.target.elements.name.value;
-    hello26_backend.greet(name).then((greeting) => {
-      setGreeting(greeting);
-    });
-    return false;
-  }
+  const handleRingSizeChange = (e) => setRingSize(e.target.value);
+  const handleMaterialChange = (e) => setMaterial(e.target.value);
+
+  const calculatePrice = () => {
+    const size = parseFloat(ringSize);
+    if (isNaN(size) || size < 0) {
+      alert('Please enter a valid ring size.');
+      return;
+    }
+
+    let basePrice;
+    switch (material) {
+      case 'Gold':
+        basePrice = 250;
+        break;
+      case 'Silver':
+        basePrice = 180;
+        break;
+      case 'Platinum':
+        basePrice = 350;
+        break;
+      default:
+        return;
+    }
+
+    const price = basePrice + size * 10; // Hypothetical formula
+    setLuxPrice(price.toFixed(2));
+  };
 
   return (
-    <main>
-      <img src="/logo2.svg" alt="DFINITY logo" />
-      <br />
-      <br />
-      <form action="#" onSubmit={handleSubmit}>
-        <label htmlFor="name">Enter your name: &nbsp;</label>
-        <input id="name" alt="Name" type="text" />
-        <button type="submit">Click Me!</button>
-      </form>
-      <section id="greeting">{greeting}</section>
-    </main>
+    <div className="container">
+      <h1>LuxRings - Smart Ring Price Calculator</h1>
+      <p>Find the perfect fit and price for your LuxRing</p>
+      <div className="input-group">
+        <label htmlFor="ringSize">Ring Size (in mm):</label>
+        <input
+          type="number"
+          id="ringSize"
+          value={ringSize}
+          onChange={handleRingSizeChange}
+          placeholder="Enter ring size"
+          className="input"
+        />
+      </div>
+      <div className="input-group">
+        <label htmlFor="material">Material:</label>
+        <select
+          id="material"
+          value={material}
+          onChange={handleMaterialChange}
+          className="input"
+        >
+          <option value="Gold">Gold</option>
+          <option value="Silver">Silver</option>
+          <option value="Platinum">Platinum</option>
+        </select>
+      </div>
+      <button onClick={calculatePrice} className="button">Calculate Price</button>
+      {luxPrice && (
+        <div className="result">
+          <h2>Total Price: ${luxPrice}</h2>
+        </div>
+      )}
+    </div>
   );
-}
+};
 
 export default App;
+
